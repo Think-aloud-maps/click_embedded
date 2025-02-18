@@ -423,9 +423,8 @@
         }*/
 
         function logData(actionType, chargingStation, button, coordinates, map) {
-            const timestamp = new Date().toISOString(); // Capture timestamp
             const entry = {
-                timestamp,
+                timestamp: new Date().toISOString(), // Capture timestamp
                 actionType,
                 chargingStation: chargingStation || "N/A",
                 button: button || "N/A",
@@ -433,18 +432,10 @@
                 map
             };
         
-            console.log("Logged Data:", entry);
+            console.log("Sending data to Qualtrics:", entry);
         
-            if (typeof Qualtrics !== "undefined") {
-                // Retrieve existing clicks if any
-                const existingClicks = Qualtrics.SurveyEngine.getEmbeddedData("MapClickData") || "";
-        
-                // Append new click data
-                const newClickData = `${existingClicks}${existingClicks ? ";" : ""}${JSON.stringify(entry)}`;
-        
-                // Store back in Qualtrics
-                Qualtrics.SurveyEngine.setEmbeddedData("MapClickData", newClickData);
-            }
+            // Send data to parent (Qualtrics) using postMessage
+            window.parent.postMessage({ action: "logData", data: entry }, "*");
         }
         
         // Function to calculate the distance between two points using the Haversine formula
